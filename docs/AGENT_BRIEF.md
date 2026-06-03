@@ -25,9 +25,13 @@ content-editing loop in hours, without overhauling the site.
 - Pull requests generate the same standalone preview as a workflow artifact. Same
   repository PRs also publish it to GitHub Pages under `/pr-<PR number>/` for
   human review before merge; fork PRs use artifacts/checks only.
+- Merges to `main` publish the production JSON, CSS, and manifest to GitHub Pages
+  for Framer to fetch from `/content/roadmap.json`, `/styles/roadmap.css`, and
+  `/manifest.json`.
 
 Edit `roadmap.json` to change content; edit `roadmap.css` to change look/layout;
-push; Framer shows the latest. See `README.md` for the editing schema and setup.
+merge to `main`; Framer fetches the latest after GitHub Pages publishes. See
+`README.md` for the editing schema and setup.
 
 ## Content / responsibility split
 
@@ -70,21 +74,23 @@ These came up while building it and are worth recording in the ADR:
    in the initial paint or indexed by search engines, and there's a brief load
    flash. Acceptable for a POC; if SEO matters, the planned successor is a
    **GitHub Action that syncs content into Framer CMS** on push (indexable).
-4. **Delivery + caching = propagation delay.** Use **jsDelivr**
-   (`cdn.jsdelivr.net/gh/<org>/<repo>@<ref>/…`) for proper MIME/CORS and caching;
-   `raw.githubusercontent.com` works but is less steady. Note jsDelivr caches
-   aggressively (hours) — edits are **not** instantly live unless you purge the
-   jsDelivr cache or use a moving `@main` ref vs a pinned `@tag`. Set editor
-   expectations accordingly.
-5. **Release control vs instant publish.** Pinning the component to a git
-   **tag/commit** (`@v1`) means edits only go live when a release is cut; using
-   `@main` publishes on merge. Trade-off between "rapid" and "controlled."
+4. **Delivery + propagation delay.** Production now uses **GitHub Pages** assets
+   published from `main` by GitHub Actions. Edits are not visible until the
+   workflow passes, Pages propagates, and Framer/browser refresh behavior shows
+   the new fetches. This is usually seconds to a few minutes. jsDelivr is no
+   longer the intended production source because it added another dependency and
+   stale-cache behavior.
+5. **Release control vs instant publish.** Pinning the component to release-managed
+   asset URLs means edits only go live when a release is cut; using the current
+   GitHub Pages production URLs publishes on merge. Trade-off between "rapid" and
+   "controlled."
 6. **No baked fallback yet.** On fetch failure the component currently shows an
    error message rather than last-known-good content — a POC limitation; consider
    baking a fallback copy in.
 7. **Renderer is duplicated.** `lib/render.js` (preview) and the renderer block
    inside `RoadmapBody.tsx` are intentional mirrors and must be kept in sync.
-   Future single-source: have the component `import()` the renderer from jsDelivr.
+   Future single-source: have the component `import()` the renderer from a public
+   production asset URL.
 8. **Font dependency.** Method v0.1 is loaded via Framer's asset CDN
    (`framerusercontent.com`); Inter + IBM Plex Mono via Google Fonts. The Method
    URLs are external dependencies that could change if Framer re-uploads the font.
@@ -98,8 +104,9 @@ These came up while building it and are worth recording in the ADR:
 
 ## Considerations specifically for "rapid, repeated editing" (the POC goal)
 
-- The **caching/propagation delay (#4)** is the most likely "I edited but nothing
-  changed" gotcha — document the purge/ref strategy for editors.
+- The **publishing/propagation delay (#4)** is the most likely "I edited but
+  nothing changed" gotcha — check the workflow, hard refresh, and inspect the
+  GitHub Pages manifest before assuming the edit failed.
 - A **JSON Schema + CI validation (#10)** is the highest-value safety net for
   agent edits going to a live page.
 - **PR review / branch protection (#9)** keeps "live editing" from becoming "live
@@ -113,7 +120,7 @@ These came up while building it and are worth recording in the ADR:
 - [ ] Create the GitHub repo and push (`main`).
 - [ ] Create an ADR via **ADRKit** capturing the decision below (status: Accepted,
       explicitly **temporary**, with the Framer-CMS successor noted as follow-up).
-- [ ] Decide `@main` (auto-publish) vs pinned `@tag` (released) for the component URLs.
+- [ ] Point the Framer component at the GitHub Pages production asset URLs.
 - [ ] Add branch protection + CODEOWNERS on `content/` and `styles/`.
 - [ ] Add a JSON Schema for `roadmap.json` + a CI validation/preview step.
 - [ ] (When SEO is needed) scope the GitHub-Action → Framer CMS sync as the successor.
