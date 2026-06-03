@@ -57,6 +57,46 @@ npx serve            # from the repo root
 Or use VS Code "Live Server". An AI tool editing the repo can do the same to
 check its work.
 
+## Preview pull requests
+
+Pull requests run a roadmap preview workflow on open, synchronize, and reopen.
+The workflow runs security tests, validates the roadmap content, builds
+`preview/standalone.html`, and uploads that file as a workflow artifact.
+
+For same-repo PRs, the workflow also publishes the generated standalone preview to
+GitHub Pages at:
+
+```text
+https://jimcollinson.github.io/autonomi-roadmap/pr-<PR number>/
+```
+
+The workflow creates or updates one bot comment on the PR with that URL when the
+repository's Actions token policy allows PR comments. It also writes the URL to
+the publish job summary, so a comment permission failure does not block an
+otherwise valid preview. Use the URL to review the rendered and styled roadmap
+body before deciding whether to request changes, publish, or merge.
+
+Fork PRs do not get a deployed preview or bot comment because those steps require
+write permissions. For forks, or if the Pages URL is unavailable, use the uploaded
+`roadmap-preview-pr-<PR number>` artifact from the workflow run and open the
+included `standalone.html` locally.
+
+PR previews are public when served through GitHub Pages because this repository is
+public. Do not put private draft material into same-repo PRs unless it is safe to
+expose in a public preview URL.
+
+The preview is only the standalone roadmap body generated from the PR branch's
+`content/roadmap.json` and `styles/roadmap.css`. It does not update Framer or the
+live `autonomi.com` page. The live Framer component remains pointed at the `@main`
+jsDelivr URLs below, so production changes only after merge to `main` and normal
+CDN propagation.
+
+If the preview URL 404s after the workflow passes, GitHub Pages may not be enabled
+for the repository/`gh-pages` branch yet, or Pages may still be propagating. If
+the PR comment is absent, check the publish job summary for the same URL and
+confirm repository Actions workflow token settings permit `issues: write` and
+`pull-requests: write`. The artifact remains the fallback preview in either case.
+
 ## Wire it into Framer
 
 ### Important: private repos do not work with browser fetch
