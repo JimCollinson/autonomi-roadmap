@@ -154,6 +154,5 @@ function buildHtml(data: any) {
         })
         .join("")}</div>`
     const sections = (data.sections || []).map(section).join('<hr class="rm-divider">')
-    const footer = data.footer ? `<div class="rm-footer"><p>${md(data.footer)}</p></div>` : ""
-    return `<div class="rm">${pills}${sections}${footer}</div>`
+    return `<div class="rm">${pills}${sections}</div>`
 }

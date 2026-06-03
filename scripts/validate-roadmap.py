@@ -17,7 +17,7 @@ ALLOWED_TAGS = {"protocol", "app", "infra", "tools"}
 ALLOWED_ICONS = {"live", "next", "sandbox"}
 ALLOWED_LAYOUTS = {"platforms", "products", "infra", "sandbox", "herocards"}
 ALLOWED_PILL_STYLES = {"is-live", "is-next", "is-sandbox"}
-TOP_LEVEL_FIELDS = {"pills", "sections", "footer"}
+TOP_LEVEL_FIELDS = {"pills", "sections"}
 PILL_FIELDS = {"label", "href", "style"}
 SECTION_FIELDS = {"id", "label", "title", "icon", "tiers"}
 TIER_FIELDS = {"label", "layout", "cards"}
@@ -65,17 +65,12 @@ def validate(data: Any) -> list[str]:
     if not isinstance(data, dict):
         return errors
 
-    for field in ("pills", "sections", "footer"):
+    for field in ("pills", "sections"):
         require(field in data, errors, "$", f"missing required top-level field {field!r}")
     reject_extra_fields(data, TOP_LEVEL_FIELDS, errors, "$")
 
     require(isinstance(data.get("pills"), list), errors, "$.pills", "must be an array")
     require(isinstance(data.get("sections"), list) and bool(data.get("sections")), errors, "$.sections", "must be a non-empty array")
-    require(is_non_empty_string(data.get("footer")), errors, "$.footer", "must be a non-empty string")
-
-    if isinstance(data.get("footer"), str):
-        check_markdown_links(data["footer"], errors, "$.footer")
-
     pills = data.get("pills") if isinstance(data.get("pills"), list) else []
     for pill_index, pill in enumerate(pills):
         pill_path = f"$.pills[{pill_index}]"

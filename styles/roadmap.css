@@ -84,9 +84,6 @@
 .rm-tag-infra{background:#E6F1FB;color:#185FA5}
 .rm-tag-tools{background:#FAECE7;color:#993C1D}
 
-/* Footer tagline */
-.rm-footer{text-align:left;padding:60px 0 40px;border-top:1px solid #e2e2ea;margin-top:40px}
-.rm-footer p{font-size:clamp(16px,1.8vw,20px);font-weight:600;color:#26264C;max-width:600px;margin:0;line-height:1.5}
 
 /* Responsive: tablet and below */
 @media(max-width:900px){

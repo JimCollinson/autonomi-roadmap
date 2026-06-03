@@ -28,7 +28,6 @@ def valid_data():
                 ],
             }
         ],
-        "footer": "Footer",
     }
 
 
