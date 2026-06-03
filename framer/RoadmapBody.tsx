@@ -44,7 +44,7 @@ export default function RoadmapBody({
                 if (alive)
                     setHtml(
                         `<div style="padding:24px;font:14px sans-serif;color:#993333">Couldn't load roadmap content from GitHub. ${String(
-                            e
+                            esc(e)
                         )}</div>`
                     )
             }
@@ -92,12 +92,40 @@ const LAYOUTS: Record<string, [string | null, string]> = {
 function esc(s: unknown) {
     return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 }
-function md(s: unknown) {
+function attr(s: unknown) {
+    return esc(s).replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+}
+function sanitizeHttpUrl(value: unknown) {
+    const url = String(value == null ? "" : value).trim()
+    if (!url || /[\u0000-\u0020"'<>`]/.test(url)) return null
+    try {
+        const parsed = new URL(url)
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null
+        if (!parsed.hostname) return null
+        return parsed.href
+    } catch {
+        return null
+    }
+}
+function inlineText(s: unknown) {
     let out = esc(s)
-    out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     out = out.replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
     out = out.replace(/`([^`]+)`/g, "<code>$1</code>")
+    return out
+}
+function md(s: unknown) {
+    const input = String(s == null ? "" : s)
+    let out = ""
+    let index = 0
+    input.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (match, text, url, offset) => {
+        out += inlineText(input.slice(index, offset))
+        const safeUrl = sanitizeHttpUrl(url)
+        out += safeUrl ? `<a href="${attr(safeUrl)}" target="_blank" rel="noopener">${inlineText(text)}</a>` : inlineText(text)
+        index = offset + match.length
+        return match
+    })
+    out += inlineText(input.slice(index))
     return out
 }
 function card(c: any, cardClass: string) {
@@ -115,11 +143,15 @@ function tier(t: any) {
 function section(s: any) {
     const icon = ICONS[s.icon] || ""
     const tiers = (s.tiers || []).map(tier).join("")
-    return `<div class="rm-section" id="${esc(s.id)}"><div class="rm-section-hdr"><div class="rm-label">${esc(s.label)}</div><div class="rm-section-title">${icon}${esc(s.title)}</div></div>${tiers}</div>`
+    return `<div class="rm-section" id="${attr(s.id)}"><div class="rm-section-hdr"><div class="rm-label">${esc(s.label)}</div><div class="rm-section-title">${icon}${esc(s.title)}</div></div>${tiers}</div>`
 }
 function buildHtml(data: any) {
     const pills = `<div class="rm-pills">${(data.pills || [])
-        .map((p: any) => `<a href="${esc(p.href)}" class="rm-pill ${esc(p.style)}">${esc(p.label)}</a>`)
+        .map((p: any) => {
+            const href = sanitizeHttpUrl(p.href)
+            const hrefAttr = href ? ` href="${attr(href)}"` : ""
+            return `<a${hrefAttr} class="rm-pill ${attr(p.style)}">${esc(p.label)}</a>`
+        })
         .join("")}</div>`
     const sections = (data.sections || []).map(section).join('<hr class="rm-divider">')
     const footer = data.footer ? `<div class="rm-footer"><p>${md(data.footer)}</p></div>` : ""

@@ -5,6 +5,7 @@
   "description": "GitHub-driven content + styles for the Autonomi roadmap, rendered by a fixed Framer component.",
   "scripts": {
     "validate": "python3 scripts/validate-roadmap.py",
+    "test:security": "node scripts/test-security.mjs && python3 scripts/test_security.py",
     "preview": "node build-preview.mjs",
     "serve": "npx --yes serve ."
   }

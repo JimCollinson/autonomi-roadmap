@@ -8,6 +8,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 
 CONTENT_PATH = Path("content/roadmap.json")
@@ -15,6 +16,14 @@ SCHEMA_PATH = Path("schemas/roadmap.schema.json")
 ALLOWED_TAGS = {"protocol", "app", "infra", "tools"}
 ALLOWED_ICONS = {"live", "next", "sandbox"}
 ALLOWED_LAYOUTS = {"platforms", "products", "infra", "sandbox", "herocards"}
+ALLOWED_PILL_STYLES = {"is-live", "is-next", "is-sandbox"}
+TOP_LEVEL_FIELDS = {"pills", "sections", "footer"}
+PILL_FIELDS = {"label", "href", "style"}
+SECTION_FIELDS = {"id", "label", "title", "icon", "tiers"}
+TIER_FIELDS = {"label", "layout", "cards"}
+CARD_FIELDS = {"tag", "title", "sub", "body"}
+SAFE_ID_RE = re.compile(r"^[a-z][a-z0-9-]*$")
+URL_FORBIDDEN_RE = re.compile(r"[\x00-\x20\"'<>`]")
 MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)\s]+)\)")
 
 
@@ -27,10 +36,26 @@ def require(condition: bool, errors: list[str], path: str, message: str) -> None
         errors.append(f"{path}: {message}")
 
 
+def reject_extra_fields(obj: dict[str, Any], allowed: set[str], errors: list[str], path: str) -> None:
+    extra = sorted(set(obj) - allowed)
+    for field in extra:
+        errors.append(f"{path}.{field}: unknown field")
+
+
+def is_http_url(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    url = value.strip()
+    if not url or URL_FORBIDDEN_RE.search(url):
+        return False
+    parsed = urlparse(url)
+    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
 def check_markdown_links(text: str, errors: list[str], path: str) -> None:
     for match in MARKDOWN_LINK_RE.finditer(text):
         url = match.group(2)
-        if not (url.startswith("http://") or url.startswith("https://")):
+        if not is_http_url(url):
             errors.append(f"{path}: Markdown link must use http/https URL: {url}")
 
 
@@ -42,6 +67,7 @@ def validate(data: Any) -> list[str]:
 
     for field in ("pills", "sections", "footer"):
         require(field in data, errors, "$", f"missing required top-level field {field!r}")
+    reject_extra_fields(data, TOP_LEVEL_FIELDS, errors, "$")
 
     require(isinstance(data.get("pills"), list), errors, "$.pills", "must be an array")
     require(isinstance(data.get("sections"), list) and bool(data.get("sections")), errors, "$.sections", "must be a non-empty array")
@@ -50,6 +76,19 @@ def validate(data: Any) -> list[str]:
     if isinstance(data.get("footer"), str):
         check_markdown_links(data["footer"], errors, "$.footer")
 
+    pills = data.get("pills") if isinstance(data.get("pills"), list) else []
+    for pill_index, pill in enumerate(pills):
+        pill_path = f"$.pills[{pill_index}]"
+        require(isinstance(pill, dict), errors, pill_path, "must be an object")
+        if not isinstance(pill, dict):
+            continue
+        reject_extra_fields(pill, PILL_FIELDS, errors, pill_path)
+        for field in ("label", "href", "style"):
+            require(field in pill, errors, pill_path, f"missing required field {field!r}")
+        require(is_non_empty_string(pill.get("label")), errors, f"{pill_path}.label", "must be a non-empty string")
+        require(is_http_url(pill.get("href")), errors, f"{pill_path}.href", "must be a well-formed http/https URL")
+        require(pill.get("style") in ALLOWED_PILL_STYLES, errors, f"{pill_path}.style", f"must be one of {sorted(ALLOWED_PILL_STYLES)}")
+
     sections = data.get("sections") if isinstance(data.get("sections"), list) else []
     seen_ids: set[str] = set()
     for section_index, section in enumerate(sections):
@@ -57,9 +96,11 @@ def validate(data: Any) -> list[str]:
         require(isinstance(section, dict), errors, section_path, "must be an object")
         if not isinstance(section, dict):
             continue
-        for field in ("id", "label", "title", "tiers"):
+        for field in ("id", "label", "title", "icon", "tiers"):
             require(field in section, errors, section_path, f"missing required field {field!r}")
+        reject_extra_fields(section, SECTION_FIELDS, errors, section_path)
         if is_non_empty_string(section.get("id")):
+            require(bool(SAFE_ID_RE.fullmatch(section["id"])), errors, f"{section_path}.id", "must be a lowercase slug/id (a-z, 0-9, hyphen)")
             if section["id"] in seen_ids:
                 errors.append(f"{section_path}.id: duplicate section id {section['id']!r}")
             seen_ids.add(section["id"])
@@ -77,7 +118,10 @@ def validate(data: Any) -> list[str]:
             require(isinstance(tier, dict), errors, tier_path, "must be an object")
             if not isinstance(tier, dict):
                 continue
+            reject_extra_fields(tier, TIER_FIELDS, errors, tier_path)
             require(tier.get("layout") in ALLOWED_LAYOUTS, errors, f"{tier_path}.layout", f"must be one of {sorted(ALLOWED_LAYOUTS)}")
+            if "label" in tier:
+                require(is_non_empty_string(tier.get("label")), errors, f"{tier_path}.label", "must be a non-empty string")
             require(isinstance(tier.get("cards"), list) and bool(tier.get("cards")), errors, f"{tier_path}.cards", "must be a non-empty array")
 
             cards = tier.get("cards") if isinstance(tier.get("cards"), list) else []
@@ -86,6 +130,7 @@ def validate(data: Any) -> list[str]:
                 require(isinstance(card, dict), errors, card_path, "must be an object")
                 if not isinstance(card, dict):
                     continue
+                reject_extra_fields(card, CARD_FIELDS, errors, card_path)
                 require(is_non_empty_string(card.get("title")), errors, f"{card_path}.title", "must be a non-empty string")
                 require(is_non_empty_string(card.get("body")), errors, f"{card_path}.body", "must be a non-empty string")
                 if "tag" in card:
