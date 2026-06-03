@@ -1,0 +1,121 @@
+name: PR preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-publish-preview:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: npm run test:security
+      - run: npm run validate
+      - run: npm run preview
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: roadmap-preview-pr-${{ github.event.pull_request.number }}
+          path: preview/standalone.html
+          if-no-files-found: error
+      - name: Publish preview to gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          OWNER="${REPO%%/*}"
+          NAME="${REPO##*/}"
+          PREVIEW_DIR="/tmp/roadmap-pr-preview"
+          rm -rf "$PREVIEW_DIR"
+          if git clone --depth 1 --branch gh-pages "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$PREVIEW_DIR"; then
+            echo "Using existing gh-pages branch"
+          else
+            mkdir -p "$PREVIEW_DIR"
+            cd "$PREVIEW_DIR"
+            git init
+            git checkout -b gh-pages
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+            cd - >/dev/null
+          fi
+          cd "$PREVIEW_DIR"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p "pr-${PR_NUMBER}"
+          cp "${GITHUB_WORKSPACE}/preview/standalone.html" "pr-${PR_NUMBER}/index.html"
+          touch .nojekyll
+          cat > index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>Autonomi roadmap previews</title>
+          <h1>Autonomi roadmap previews</h1>
+          <p>Open a pull request preview under <code>/pr-N/</code>.</p>
+          HTML
+          git add .
+          if git diff --cached --quiet; then
+            echo "No preview changes to publish"
+          else
+            git commit -m "Deploy roadmap preview for PR ${PR_NUMBER}"
+            git push origin gh-pages
+          fi
+          echo "PREVIEW_URL=https://${OWNER}.github.io/${NAME}/pr-${PR_NUMBER}/" >> "$GITHUB_ENV"
+      - name: Comment preview link on PR
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ env.PREVIEW_URL }}
+        with:
+          script: |
+            const marker = '<!-- roadmap-pr-preview -->'
+            const body = `${marker}\nRoadmap preview for this PR:\n\n${process.env.PREVIEW_URL}\n\nIf the page 404s immediately after the check passes, wait a minute for GitHub Pages propagation and refresh.`
+            const {owner, repo} = context.repo
+            const issue_number = context.payload.pull_request.number
+            const comments = await github.rest.issues.listComments({owner, repo, issue_number, per_page: 100})
+            const existing = comments.data.find(c => c.user.type === 'Bot' && c.body.includes(marker))
+            if (existing) {
+              await github.rest.issues.updateComment({owner, repo, comment_id: existing.id, body})
+            } else {
+              await github.rest.issues.createComment({owner, repo, issue_number, body})
+            }
+
+  cleanup-preview:
+    if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove closed PR preview from gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          PREVIEW_DIR="/tmp/roadmap-pr-preview"
+          rm -rf "$PREVIEW_DIR"
+          if ! git clone --depth 1 --branch gh-pages "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$PREVIEW_DIR"; then
+            echo "No gh-pages branch to clean"
+            exit 0
+          fi
+          cd "$PREVIEW_DIR"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf "pr-${PR_NUMBER}"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No preview to clean"
+          else
+            git commit -m "Remove roadmap preview for PR ${PR_NUMBER}"
+            git push origin gh-pages
+          fi

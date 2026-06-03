@@ -57,6 +57,19 @@ npx serve            # from the repo root
 Or use VS Code "Live Server". An AI tool editing the repo can do the same to
 check its work.
 
+## Pull request previews
+
+Every pull request builds and publishes a standalone roadmap preview.
+
+When a PR opens or updates, GitHub Actions will:
+
+- run the security tests, content validation, and preview build;
+- upload `preview/standalone.html` as a workflow artifact;
+- publish a GitHub Pages preview at `https://jimcollinson.github.io/autonomi-roadmap/pr-<PR number>/`;
+- comment the preview link on the PR.
+
+Use that PR preview link to review CSS/content changes before merging to `main`. After merge, the Framer component reads the public `@main` JSON/CSS URLs through jsDelivr, so CDN propagation may still take a few minutes.
+
 ## Wire it into Framer
 
 ### Important: private repos do not work with browser fetch
