@@ -58,6 +58,12 @@
               "body": "15+ language SDKs: Python, Go, Rust, JavaScript, Java, Kotlin, C#, Swift, and more. gRPC and REST interfaces."
             },
             {
+              "tag": "tools",
+              "title": "Browser Extension",
+              "sub": "Access the network directly from your browser",
+              "body": "A web extension for Chrome and Firefox (and Chromium/Gecko derivatives) that lets you download autonomi:// links directly from the network without a proxy or intermediary. Runs the antd daemon in the background automatically."
+            },
+            {
               "tag": "infra",
               "title": "ANT Token",
               "sub": "The network's native currency",
