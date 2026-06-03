@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Autonomi Roadmap — standalone preview</title>
+  <style>/* Autonomi roadmap body styles. Edit freely — this file is the single source of
+   truth for the look & layout. Content lives in /content/roadmap.json. */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Site display font, served from Framer (matches autonomi.com /roadmap headlines) */
+@font-face{font-family:'Method v0.1';src:url('https://framerusercontent.com/assets/xfm5m9qerFlsd1z9BCLuAMQqOs.woff2') format('woff2');font-weight:300 500;font-style:normal;font-display:swap}
+@font-face{font-family:'Method v0.1';src:url('https://framerusercontent.com/assets/axd4TvliwAoLydajEJ7EYJl139I.woff2') format('woff2');font-weight:600 800;font-style:normal;font-display:swap}
+
+.rm *{margin:0;padding:0;box-sizing:border-box}
+.rm{font-family:'Inter',sans-serif;font-size:16px;line-height:1.5em;color:#131C32;max-width:var(--rm-maxw,1200px);margin:0 auto;padding:0 24px;width:100%}
+/* Headings use the site display font; body stays Inter for continuity with /roadmap */
+.rm-section-title,.rm-platform h3,.rm-product h3,.rm-infra-card h3,.rm-hero-card h3,.rm-sandbox-card h3{font-family:'Method v0.1','Inter',-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-0.02em}
+/* Eyebrows / labels use the site mono (IBM Plex Mono, matches /roadmap eyebrows) */
+.rm-label,.rm-tier,.rm-tag{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
+.rm a{color:inherit}
+.rm p a{color:#E91337;text-decoration:none;border-bottom:1px solid rgba(233,19,55,0.35)}
+.rm p a:hover{border-bottom-color:#E91337}
+
+/* Section nav pills */
+.rm-pills{display:flex;justify-content:flex-start;gap:8px;padding:0 0 20px;flex-wrap:wrap}
+.rm-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:100px;font-size:14px;font-weight:600;text-decoration:none;border:1.5px solid #e2e2ea;color:#6b6b8a;background:transparent;cursor:pointer;transition:all 0.2s}
+.rm-pill:hover{border-color:#8994A3}
+.rm-pill.is-live{background:#26264C;color:#fff;border-color:#26264C}
+.rm-pill.is-next{background:#E91337;color:#fff;border-color:#E91337}
+.rm-pill.is-sandbox{background:#f0f0f5;color:#26264C;border-color:#e2e2ea}
+.rm-pill svg{width:18px;height:18px}
+
+/* Sections */
+.rm-section{padding:60px 0 40px}
+.rm-section-hdr{margin-bottom:36px}
+.rm-label{font-size:13px;font-weight:400;text-transform:uppercase;letter-spacing:2.6px;line-height:13px;color:#6b6b8a;margin-bottom:8px}
+.rm-section-title{font-size:clamp(28px,3.5vw,36px);font-weight:800;color:#26264C;letter-spacing:-1px;display:flex;align-items:center;gap:12px}
+.rm-section-title svg{width:48px;height:48px;flex-shrink:0;background:#EEF0F8;border:1.5px solid #d0d3e0;border-radius:50%;padding:6px}
+
+/* Tier labels */
+.rm-tier{font-size:13px;font-weight:400;text-transform:uppercase;letter-spacing:2.6px;line-height:13px;color:#8994A3;margin:32px 0 14px;padding-bottom:8px;border-bottom:1px solid #f0f0f5}
+
+/* Divider */
+.rm-divider{border:none;border-top:1px solid #e2e2ea;margin:20px 0}
+
+/* Platform cards */
+.rm-platforms{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:8px}
+.rm-platform{border:1.5px solid #e2e2ea;border-radius:16px;padding:22px;transition:border-color 0.2s}
+.rm-platform:hover{border-color:#8994A3}
+.rm-platform h3{font-size:22px;font-weight:700;color:#26264C;margin-bottom:4px;letter-spacing:-0.5px}
+.rm-platform .rm-card-sub{font-size:1em;color:#E91337;font-weight:500;margin-bottom:10px}
+.rm-platform p{font-size:0.9em;color:#6b6b8a;line-height:1.5}
+
+/* Product cards */
+.rm-products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:8px}
+.rm-product{border:1.5px solid #e2e2ea;border-radius:14px;padding:22px;transition:border-color 0.2s}
+.rm-product:hover{border-color:#8994A3}
+.rm-product h3{font-size:16px;font-weight:600;color:#26264C;margin-bottom:3px}
+.rm-product .rm-card-sub{font-size:0.9em;color:#E91337;font-weight:500;margin-bottom:8px}
+.rm-product p{font-size:0.9em;color:#6b6b8a;line-height:1.5}
+
+/* Infrastructure cards */
+.rm-infra{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:8px}
+.rm-infra-card{border:1.5px solid #e2e2ea;border-radius:12px;padding:22px;transition:border-color 0.2s}
+.rm-infra-card:hover{border-color:#8994A3}
+.rm-infra-card h3{font-size:14px;font-weight:600;color:#26264C;margin-bottom:3px}
+.rm-infra-card .rm-card-sub{font-size:0.9em;color:#E91337;font-weight:500;margin-bottom:5px}
+.rm-infra-card p{font-size:0.9em;color:#6b6b8a;line-height:1.5}
+
+/* Hero card - Fae, Trust Layer */
+.rm-hero-card{border:1.5px solid #e2e2ea;border-radius:16px;padding:22px;margin-bottom:14px;border-left:4px solid #E91337;transition:border-color 0.2s}
+.rm-hero-card:hover{border-color:#8994A3}
+.rm-hero-card h3{font-size:20px;font-weight:700;color:#26264C;margin-bottom:4px}
+.rm-hero-card .rm-card-sub{font-size:0.9em;color:#E91337;font-weight:500;margin-bottom:10px}
+.rm-hero-card p{font-size:0.9em;color:#6b6b8a;line-height:1.5}
+
+/* Sandbox cards */
+.rm-sandbox{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.rm-sandbox-card{border:1.5px dashed #d8d8e2;border-radius:12px;padding:22px;background:#fafafc;transition:border-color 0.2s}
+.rm-sandbox-card:hover{border-color:#8994A3}
+.rm-sandbox-card h3{font-size:14px;font-weight:600;color:#26264C;margin-bottom:3px}
+.rm-sandbox-card .rm-card-sub{font-size:0.9em;color:#8994A3;font-weight:500;margin-bottom:5px}
+.rm-sandbox-card p{font-size:0.9em;color:#6b6b8a;line-height:1.5}
+
+/* Tags */
+.rm-tag{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;padding:3px 8px;border-radius:5px;margin-bottom:10px}
+.rm-tag-protocol{background:#EEEDFE;color:#534AB7}
+.rm-tag-app{background:#E1F5EE;color:#0F6E56}
+.rm-tag-infra{background:#E6F1FB;color:#185FA5}
+.rm-tag-tools{background:#FAECE7;color:#993C1D}
+
+/* Footer tagline */
+.rm-footer{text-align:left;padding:60px 0 40px;border-top:1px solid #e2e2ea;margin-top:40px}
+.rm-footer p{font-size:clamp(16px,1.8vw,20px);font-weight:600;color:#26264C;max-width:600px;margin:0;line-height:1.5}
+
+/* Responsive: tablet and below */
+@media(max-width:900px){
+  .rm-platforms{grid-template-columns:1fr}
+  .rm-products{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .rm-infra{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .rm-sandbox{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .rm-section{padding:40px 0 24px}
+  .rm-pills{gap:6px}
+  .rm-pill{padding:8px 18px;font-size:13px}
+}
+/* Responsive: phone */
+@media(max-width:600px){
+  .rm-products{grid-template-columns:1fr}
+  .rm-infra{grid-template-columns:1fr}
+  .rm-sandbox{grid-template-columns:1fr}
+  .rm-section-title{font-size:24px;letter-spacing:-0.5px}
+  .rm-section-title svg{width:40px;height:40px}
+  .rm-section{padding:32px 0 20px}
+}
+</style>
+  <style>body{margin:0;padding:40px 0;background:#fff}</style>
+</head>
+<body>
+<div class="rm"><div class="rm-pills"><a href="https://autonomi.com/#live" class="rm-pill is-live">Live</a><a href="https://autonomi.com/#next" class="rm-pill is-next">Next</a><a href="https://autonomi.com/#sandbox" class="rm-pill is-sandbox">Sandbox</a></div><div class="rm-section" id="live"><div class="rm-section-hdr"><div class="rm-label">Live</div><div class="rm-section-title"><svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="10" stroke="#26264C" stroke-width="3"/><circle cx="60" cy="60" r="4" fill="#E91337"/><path d="M44 44A22 22 0 0176 44" stroke="#26264C" stroke-width="2.5" stroke-linecap="round"/><path d="M76 76A22 22 0 0144 76" stroke="#26264C" stroke-width="2.5" stroke-linecap="round"/><path d="M38 38A31 31 0 0182 38" stroke="#26264C" stroke-width="2" stroke-linecap="round" opacity="0.4"/><path d="M82 82A31 31 0 0138 82" stroke="#26264C" stroke-width="2" stroke-linecap="round" opacity="0.4"/></svg>Running today</div></div><div class="rm-tier">Platforms</div><div class="rm-platforms"><div class="rm-platform"><span class="rm-tag rm-tag-protocol">Protocol</span><h3>Archive</h3><div class="rm-card-sub">The permanent data network</div><p>The peer-to-peer storage network is live. Nodes run on home computers, connect directly through NAT without configuration. Every handshake uses post-quantum cryptography - ML-DSA-65 and ML-KEM-768, both NIST-standardised. No classical fallbacks. Data is self-encrypted using ChaCha20-Poly1305 + BLAKE3. Pay once per upload. No subscriptions, no egress fees.</p></div><div class="rm-platform"><span class="rm-tag rm-tag-protocol">Protocol</span><h3>x0x</h3><div class="rm-card-sub">Agent-to-agent collaboration network</div><p>Post-quantum encrypted gossip networking. Agents discover each other, share skills, synchronise state, and collaborate without central servers. Secured private groups using TreeKEM - invite, join, ban, forward-secrecy membership. Running on a production fleet across NYC, SFO, Helsinki, Nuremberg, Singapore, and Sydney.</p></div></div><div class="rm-tier">Products</div><div class="rm-products"><div class="rm-product"><span class="rm-tag rm-tag-app">Application</span><h3>Indelible</h3><div class="rm-card-sub">Permanent storage for organisations</div><p>Free, open-source gateway. REST API, Docker deployment, collections, tagging, bulk ops. Enterprise SSO (Okta, Entra, Google), SCIM 2.0, multi-wallet. <a href="https://indelibletool.com/" target="_blank" rel="noopener">indelibletool.com</a></p></div><div class="rm-product"><span class="rm-tag rm-tag-app">Application</span><h3>Desktop App</h3><div class="rm-card-sub">Upload, download, run nodes</div><p>Mac, Windows, Linux. 18 languages. Upload files, run a node and earn ANT. Dark mode, auto-updates, built-in wallet.</p></div><div class="rm-product"><span class="rm-tag rm-tag-app">Application</span><h3>The Reading Room</h3><div class="rm-card-sub">Where knowledge lives permanently</div><p>Curated, open-access library stored on Archive. Four books, 442 sources, 78,000 words, audio narration. <a href="https://reading-room.com/" target="_blank" rel="noopener">reading-room.com</a></p></div><div class="rm-product"><span class="rm-tag rm-tag-tools">Tools</span><h3>SDKs and CLI</h3><div class="rm-card-sub">Build on Autonomi from any language</div><p>15+ language SDKs: Python, Go, Rust, JavaScript, Java, Kotlin, C#, Swift, and more. gRPC and REST interfaces.</p></div><div class="rm-product"><span class="rm-tag rm-tag-infra">Infrastructure</span><h3>ANT Token</h3><div class="rm-card-sub">The network's native currency</div><p>Live on Arbitrum. Merkle Tree batch payments and single-node payments. Total supply: 1.2 billion. Available on MEXC, Uniswap V3, BitMart, Ourbit.</p></div></div><div class="rm-tier">Network capabilities</div><div class="rm-infra"><div class="rm-infra-card"><h3>Post-Quantum Security</h3><div class="rm-card-sub">No classical fallbacks</div><p>ML-DSA-65 signatures, ML-KEM-768 key exchange. NIST-standardised. First of its kind at this scale.</p></div><div class="rm-infra-card"><h3>QUIC NAT Traversal</h3><div class="rm-card-sub">Every home computer is infrastructure</div><p>Nodes connect peer-to-peer through residential NAT without configuration.</p></div><div class="rm-infra-card"><h3>Self-Encryption</h3><div class="rm-card-sub">Impossible to read without your keys</div><p>ChaCha20-Poly1305 + BLAKE3. Content-addressed, convergent, geographically distributed.</p></div><div class="rm-infra-card"><h3>Node Reputation</h3><div class="rm-card-sub">The network protects itself</div><p>EigenTrust scoring, sybil resistance, eclipse protection, geographic diversity.</p></div><div class="rm-infra-card"><h3>Auto Upgrades</h3><div class="rm-card-sub">The network evolves together</div><p>Nodes upgrade automatically with integrity verification. No manual intervention.</p></div><div class="rm-infra-card"><h3>Data Payments</h3><div class="rm-card-sub">Pay once, store permanently</div><p>Merkle Tree batch payments for reduced gas. Single-node payments for simplicity. All via ANT.</p></div></div></div><hr class="rm-divider"><div class="rm-section" id="next"><div class="rm-section-hdr"><div class="rm-label">Next</div><div class="rm-section-title"><svg viewBox="0 0 120 120" fill="none"><path d="M42 60H72" stroke="#26264C" stroke-width="3.5" stroke-linecap="round"/><path d="M64 50L74 60L64 70" stroke="#26264C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 48L42 42L48 42" stroke="#E91337" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M78 72L78 78L72 78" stroke="#E91337" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Actively shipping</div></div><div class="rm-hero-card"><span class="rm-tag rm-tag-app">Application</span><h3>Fae</h3><div class="rm-card-sub">Your local AI that becomes part of something bigger</div><p>Privacy-first AI agent on your machine. No cloud, no internet required. Being redesigned as headless and cross-platform - Swift for Apple, Dioxus for Windows/Linux/iOS/Android. Via x0x, your Fae connects to your friends' Fae agents to form "The Fae" - trusted communities that share capabilities, collaborate on tasks, and help each other.</p></div><div class="rm-hero-card"><span class="rm-tag rm-tag-protocol">Protocol</span><h3>Trust Layer</h3><div class="rm-card-sub">Agent reputation marketplace</div><p>On-chain marketplace where agents stake real tokens behind their claims. Disputes resolved using immutable evidence stored on Archive and adjudicated by independent AI resolvers. Bounty hunters challenge agents with inflated reputations. Your reputation is financial - you can't fake it without risking real money. Proof of concept live on Base testnet.</p></div><div class="rm-products"><div class="rm-product"><span class="rm-tag rm-tag-protocol">Protocol</span><h3>Storage Auditing</h3><div class="rm-card-sub">Proving nodes store what they claim</div><p>Lightweight challenge on existing gossip. Merkle root hash + random nonce. Tested on 400 nodes, 5 regions, zero false positives.</p></div><div class="rm-product"><span class="rm-tag rm-tag-infra">Infrastructure</span><h3>Faster Uploads + Downloads</h3><div class="rm-card-sub">Smarter throughput management</div><p>Byte-aware throughput optimiser. ~2x faster downloads. First 2.7GB production upload in 30 minutes.</p></div><div class="rm-product"><span class="rm-tag rm-tag-app">Application</span><h3>Agent Skill Sharing</h3><div class="rm-card-sub">Skills that spread themselves</div><p>Share agent skills across devices and users. Private groups, public feeds, collaborative improvement.</p></div><div class="rm-product"><span class="rm-tag rm-tag-app">Application</span><h3>Communitas</h3><div class="rm-card-sub">Collaboration without corporate servers</div><p>Full collaboration suite on x0x. Board, Chat, Docs, Canvas, Drive, Calls - all peer-to-peer with post-quantum encryption.</p></div><div class="rm-product"><span class="rm-tag rm-tag-infra">Infrastructure</span><h3>Clock Tolerance</h3><div class="rm-card-sub">Works regardless of system time</div><p>Storage-state verification replacing timestamp-based validation. Critical for Windows and dual-boot users.</p></div><div class="rm-product"><span class="rm-tag rm-tag-infra">Infrastructure</span><h3>Bootstrap Cache</h3><div class="rm-card-sub">Faster, more reliable connections</div><p>Smarter startup, IP diversity, sector-balanced peer selection. Reduced time-to-first-operation.</p></div><div class="rm-product"><span class="rm-tag rm-tag-tools">Tools</span><h3>Mobile SDKs</h3><div class="rm-card-sub">Autonomi on iOS and Android</div><p>Native Swift and Kotlin bindings. xcframework and AAR packaging. iOS test app built.</p></div><div class="rm-product"><span class="rm-tag rm-tag-protocol">Protocol</span><h3>Four-Word Addresses</h3><div class="rm-card-sub">Memorable network locations</div><p>Human-readable, verbally shareable four-word addresses replacing cryptographic hashes and IPs.</p></div><div class="rm-product"><span class="rm-tag rm-tag-app">Application</span><h3>Indelible Hardening</h3><div class="rm-card-sub">Enterprise-ready permanent storage</div><p>Content dedup, improved search, lazy-loading collections, activity metrics, CSRF protection.</p></div></div></div><hr class="rm-divider"><div class="rm-section" id="sandbox"><div class="rm-section-hdr"><div class="rm-label">Sandbox</div><div class="rm-section-title"><svg viewBox="0 0 120 120" fill="none"><circle cx="48" cy="48" r="4" fill="#26264C" opacity="0.6"/><circle cx="72" cy="48" r="4" fill="#26264C" opacity="0.6"/><circle cx="60" cy="72" r="4" fill="#26264C" opacity="0.6"/><circle cx="42" cy="66" r="3.5" fill="#E91337" opacity="0.7"/><circle cx="78" cy="66" r="3.5" fill="#E91337" opacity="0.7"/><circle cx="60" cy="42" r="3.5" fill="#E91337" opacity="0.7"/><line x1="48" y1="48" x2="72" y2="48" stroke="#26264C" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 4"/><line x1="72" y1="48" x2="60" y2="72" stroke="#26264C" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 4"/><line x1="60" y1="72" x2="48" y2="48" stroke="#26264C" stroke-width="1.5" opacity="0.3" stroke-dasharray="4 4"/></svg>Being shaped</div></div><div class="rm-sandbox"><div class="rm-sandbox-card"><h3>Voice and Video</h3><div class="rm-card-sub">Peer-to-peer communications</div><p>WebRTC over QUIC. No STUN/TURN servers. Uses the network's own NAT traversal. 224 tests passing.</p></div><div class="rm-sandbox-card"><h3>Compute Mesh</h3><div class="rm-card-sub">Distributed processing</div><p>Pool computing resources across trusted friends' machines. ML inference, shared GPU access, slot-based reservations.</p></div><div class="rm-sandbox-card"><h3>Symphony</h3><div class="rm-card-sub">Agent orchestration at scale</div><p>Specialised agents forming teams, dispatching tasks, collaborating on complex work. CRDT-backed, partition-tolerant.</p></div><div class="rm-sandbox-card"><h3>Payment Gateway</h3><div class="rm-card-sub">More ways to pay for storage</div><p>Credit or debit card, stablecoins, or ANT directly. No crypto knowledge required for those who don't want it.</p></div><div class="rm-sandbox-card"><h3>Agentic Payments</h3><div class="rm-card-sub">Zero-friction agent transactions</div><p>Machine-to-machine payment protocols. Agents pay each other using ANT - directly, programmatically, at scale.</p></div><div class="rm-sandbox-card"><h3>AI-Native Networking</h3><div class="rm-card-sub">The network gets smarter</div><p>Intelligent routing, predictive optimisation, adaptive resource allocation.</p></div><div class="rm-sandbox-card"><h3>Quantum Threshold Crypto</h3><div class="rm-card-sub">Distributed key management</div><p>Multi-party computation using post-quantum primitives. Shared custody, threshold signing.</p></div></div></div><div class="rm-footer"><p>The decentralized ecosystem for the agentic era. Post-quantum secure, permanent, and built to run when the internet doesn't.</p></div></div>
+</body>
+</html>
