@@ -1,0 +1,24 @@
+name: ADR governance
+
+on:
+  pull_request:
+    paths:
+      - "docs/adr/**"
+      - ".adr-kit.yaml"
+      - "scripts/adr-governance.py"
+  push:
+    branches: [main]
+    paths:
+      - "docs/adr/**"
+      - ".adr-kit.yaml"
+      - "scripts/adr-governance.py"
+
+jobs:
+  adr-governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: python3 scripts/adr-governance.py

@@ -1,0 +1,20 @@
+adr:
+  directory: docs/adr
+  template: docs/adr/TEMPLATE.md
+  filename_pattern: "ADR-\\d{4}-[a-z0-9-]+\\.md"
+  statuses:
+    - Proposed
+    - Accepted
+    - Superseded
+    - Deprecated
+  required_frontmatter:
+    - id
+    - title
+    - status
+    - date
+  required_headings:
+    - Context
+    - Decision
+    - Consequences
+    - Alternatives considered
+    - Follow-up / exit criteria
