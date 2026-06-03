@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jimcollinson/autonomi-roadmap/schemas/roadmap.schema.json",
+  "title": "Autonomi roadmap content",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["pills", "sections", "footer"],
+  "properties": {
+    "pills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "href", "style"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "href": { "type": "string", "pattern": "^#[A-Za-z0-9_-]+$" },
+          "style": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/section" }
+    },
+    "footer": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "title", "icon", "tiers"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+        "label": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "icon": { "enum": ["live", "next", "sandbox"] },
+        "tiers": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/tier" }
+        }
+      }
+    },
+    "tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layout", "cards"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "layout": { "enum": ["platforms", "products", "infra", "sandbox", "herocards"] },
+        "cards": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/card" }
+        }
+      }
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "body"],
+      "properties": {
+        "tag": { "enum": ["protocol", "app", "infra", "tools"] },
+        "title": { "type": "string", "minLength": 1 },
+        "sub": { "type": "string" },
+        "body": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
