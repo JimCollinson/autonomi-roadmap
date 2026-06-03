@@ -176,6 +176,7 @@ jobs:
       actions: read
       contents: write
       issues: write
+      pull-requests: write
     steps:
       - name: Download standalone preview artifact
         uses: actions/download-artifact@v4
@@ -279,7 +280,7 @@ jobs:
             echo
             echo "### PR comment not posted"
             echo
-            echo "The preview was published, but GitHub rejected the bot comment. The workflow requests least-privilege issues:write permission; if comments are still blocked, check the repository Actions workflow token policy. The preview URL above and the uploaded artifact remain the fallback."
+            echo "The preview was published, but GitHub rejected the bot comment. The workflow requests least-privilege issues:write and pull-requests:write permissions because GitHub treats PR comments as issue comments with PR context; if comments are still blocked, check the repository Actions workflow token policy. The preview URL above and the uploaded artifact remain the fallback."
           } >> "$GITHUB_STEP_SUMMARY"
 
   cleanup-preview:
