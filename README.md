@@ -15,8 +15,9 @@ framer/RoadmapBody.tsx <- the fixed Framer component: fetches the two files abov
 ```
 
 Edit `roadmap.json` to change content. Edit `roadmap.css` to change styling or
-layout. Push to GitHub — the live site shows the latest. The hero stays a
-separate native Framer component above this one.
+layout. Merge to `main` and GitHub Actions publishes the production assets to
+GitHub Pages for Framer to fetch. The hero stays a separate native Framer
+component above this one.
 
 ## Editing content
 
@@ -87,15 +88,34 @@ expose in a public preview URL.
 
 The preview is only the standalone roadmap body generated from the PR branch's
 `content/roadmap.json` and `styles/roadmap.css`. It does not update Framer or the
-live `autonomi.com` page. The live Framer component remains pointed at the `@main`
-jsDelivr URLs below, so production changes only after merge to `main` and normal
-CDN propagation.
+live `autonomi.com` page. Production changes only after merge to `main`, the
+production asset publish workflow completes, and GitHub Pages plus Framer/browser
+refresh behavior expose the new files.
 
-If the preview URL 404s after the workflow passes, GitHub Pages may not be enabled
-for the repository/`gh-pages` branch yet, or Pages may still be propagating. If
-the PR comment is absent, check the publish job summary for the same URL and
-confirm repository Actions workflow token settings permit `issues: write` and
+If the preview URL 404s immediately after the workflow passes, GitHub Pages may
+still be propagating. This delay is usually seconds to a few minutes. If the PR
+comment is absent, check the publish job summary for the same URL and confirm
+repository Actions workflow token settings permit `issues: write` and
 `pull-requests: write`. The artifact remains the fallback preview in either case.
+
+## Production asset publishing
+
+Merges to `main` run the same security, validation, and preview checks, then
+publish the approved production assets to GitHub Pages:
+
+- **JSON URL**: `https://jimcollinson.github.io/autonomi-roadmap/content/roadmap.json`
+- **CSS URL**: `https://jimcollinson.github.io/autonomi-roadmap/styles/roadmap.css`
+- **Manifest URL**: `https://jimcollinson.github.io/autonomi-roadmap/manifest.json`
+
+The manifest records the deployed commit SHA, UTC update timestamp, and asset
+paths/URLs. If a merged change is not visible on the Framer page, wait a short
+period, hard refresh, and check the manifest URL to confirm which commit GitHub
+Pages is serving. GitHub Pages propagation, browser caching, and Framer preview or
+publish refresh behavior can all affect when a change becomes visible; normally it
+is seconds to a few minutes, but short delays can happen.
+
+jsDelivr is no longer the intended production source for this roadmap body. Treat
+GitHub Pages as the production asset host unless a future ADR replaces it.
 
 ## Wire it into Framer
 
@@ -103,11 +123,11 @@ confirm repository Actions workflow token settings permit `issues: write` and
 
 The Framer component fetches `content/roadmap.json` and `styles/roadmap.css` in the visitor's browser. That means the URLs must be publicly reachable without GitHub authentication.
 
-At the moment this repo is private, so the public CDN/raw URLs will return 404 and Framer will not be able to load the roadmap body from them.
+At the moment this repo is private, so browser-facing public asset URLs will return 404 unless GitHub Pages is publicly serving the published assets. Framer will not be able to load the roadmap body from private GitHub URLs.
 
 Before using this on a Framer test or live page, choose one delivery path:
 
-1. **Make this repo public** and use jsDelivr URLs. This is the simplest POC path if the roadmap content is safe to publish.
+1. **Enable public GitHub Pages access** and use the GitHub Pages URLs below. This is the intended production path if the roadmap content is safe to publish.
 2. **Keep the repo private** and copy/sync the generated content into a public host, Framer CMS, or another controlled public asset location. This is safer for private drafts but needs more setup.
 3. **Use a server/proxy** that can read the private repo and expose only approved roadmap JSON/CSS publicly. This is usually overkill for the POC.
 
@@ -126,30 +146,31 @@ What to paste into Framer:
 - The hero/header/intro/site nav/footer remain native Framer content.
 - This repo controls only the roadmap body section.
 
-### URLs to use if/when the repo is public
+### URLs to use in Framer
 
-Once the repo or selected assets are publicly reachable, set these component properties:
+Once GitHub Pages production assets are publicly reachable, set these component properties:
 
-- **JSON URL**: `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/content/roadmap.json`
-- **CSS URL**: `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/styles/roadmap.css`
+- **JSON URL**: `https://jimcollinson.github.io/autonomi-roadmap/content/roadmap.json`
+- **CSS URL**: `https://jimcollinson.github.io/autonomi-roadmap/styles/roadmap.css`
 
 Manual Framer test path:
 
 1. In Framer, create or update a code component using `framer/RoadmapBody.tsx`.
 2. Drop the component onto a test page where the roadmap body should appear.
 3. Set width **Fill** and height **Auto**.
-4. In the component properties, set **JSON URL** and **CSS URL** to the public URLs above, or to whatever public asset URLs you choose.
+4. In the component properties, set **JSON URL** and **CSS URL** to the GitHub Pages URLs above, or to whatever public asset URLs you choose.
 5. Preview or publish the test page.
 6. Confirm the body content renders, resizes across breakpoints, and matches `preview/standalone.html`.
 
 Notes:
 
-1. The easiest public delivery path is **jsDelivr** (proper MIME + CORS + caching):
-   - `https://cdn.jsdelivr.net/gh/<org>/<repo>@main/content/roadmap.json`
-   - `https://cdn.jsdelivr.net/gh/<org>/<repo>@main/styles/roadmap.css`
-   - `raw.githubusercontent.com` can also work for public files, but jsDelivr is steadier for MIME/CORS.
-2. jsDelivr does not serve private GitHub repo contents.
-3. Pin to a tag/commit instead of `@main` (e.g. `@v1`) if you want changes to go live only when you cut a release.
+1. The intended production delivery path is **GitHub Pages** from the `gh-pages`
+   branch, written by GitHub Actions on `main` pushes.
+2. jsDelivr is no longer intended as the production source. It may still serve
+   public repository files, but its stale-cache behavior is why production moved
+   to GitHub Pages.
+3. Pin to release-managed URLs in a future workflow if you want changes to go live
+   only when you cut a release.
 
 ## Known trade-off (read before going live)
 
@@ -162,12 +183,12 @@ add that.
 
 ## Governance before live use
 
-Keep the GitHub repo private for the POC. Before using `@main` on a live public page, protect `main` with required pull requests and CODEOWNERS review for `content/`, `styles/`, `framer/`, `lib/`, and `docs/adr/`.
+Keep the GitHub repo private for the POC unless/until the production assets are intended to be public. Before using GitHub Pages URLs on a live public page, protect `main` with required pull requests and CODEOWNERS review for `content/`, `styles/`, `framer/`, `lib/`, and `docs/adr/`.
 
-Anyone with write access can change public roadmap copy and links once Framer points at `@main`, so direct pushes should be reserved for emergencies.
+Anyone with write access can change public roadmap copy and links once Framer points at the GitHub Pages assets, so direct pushes should be reserved for emergencies.
 
 ## Keeping the renderer in sync
 
 `lib/render.js` and the renderer block inside `framer/RoadmapBody.tsx` are
 intentional mirrors. To make it truly single-source later, publish `render.js`
-and have the Framer component `import()` it from jsDelivr instead of inlining.
+and have the Framer component import it instead of inlining.

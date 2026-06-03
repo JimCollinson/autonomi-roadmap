@@ -1,6 +1,8 @@
 name: PR preview
 
 on:
+  push:
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
   pull_request_target:
@@ -9,10 +11,121 @@ on:
 permissions: {}
 
 concurrency:
-  group: roadmap-pr-preview-${{ github.event.pull_request.number }}
+  group: roadmap-pages-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
+  publish-production:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    name: Validate and publish production assets
+    runs-on: ubuntu-latest
+    concurrency:
+      group: roadmap-pages-gh-pages
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run security tests
+        run: npm run test:security
+
+      - name: Validate roadmap content
+        run: npm run validate
+
+      - name: Build standalone preview
+        run: npm run preview
+
+      - name: Publish production assets to gh-pages branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          OWNER="${REPO%%/*}"
+          NAME="${REPO##*/}"
+          OWNER_LOWER="$(printf '%s' "$OWNER" | tr '[:upper:]' '[:lower:]')"
+          PAGES_DIR="${RUNNER_TEMP}/roadmap-production-pages"
+          PAGES_BASE_URL="https://${OWNER_LOWER}.github.io/${NAME}"
+
+          rm -rf "$PAGES_DIR"
+          if git clone --depth 1 --branch gh-pages "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$PAGES_DIR"; then
+            echo "Using existing gh-pages branch"
+          else
+            mkdir -p "$PAGES_DIR"
+            cd "$PAGES_DIR"
+            git init
+            git checkout -b gh-pages
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+            cd - >/dev/null
+          fi
+
+          cd "$PAGES_DIR"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          mkdir -p content styles
+          cp "${GITHUB_WORKSPACE}/content/roadmap.json" content/roadmap.json
+          cp "${GITHUB_WORKSPACE}/styles/roadmap.css" styles/roadmap.css
+          touch .nojekyll
+          cat > index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>Autonomi roadmap assets and previews</title>
+          <h1>Autonomi roadmap assets and previews</h1>
+          <h2>Production assets</h2>
+          <ul>
+            <li><a href="content/roadmap.json">content/roadmap.json</a></li>
+            <li><a href="styles/roadmap.css">styles/roadmap.css</a></li>
+            <li><a href="manifest.json">manifest.json</a></li>
+          </ul>
+          <h2>Pull request previews</h2>
+          <p>Open a pull request preview under <code>/pr-N/</code>.</p>
+          HTML
+
+          UPDATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          python3 - <<PY
+          import json
+          from pathlib import Path
+
+          manifest = {
+              "commit": "${COMMIT_SHA}",
+              "updatedAt": "${UPDATED_AT}",
+              "assets": {
+                  "roadmapJson": {
+                      "path": "/${NAME}/content/roadmap.json",
+                      "url": "${PAGES_BASE_URL}/content/roadmap.json",
+                  },
+                  "roadmapCss": {
+                      "path": "/${NAME}/styles/roadmap.css",
+                      "url": "${PAGES_BASE_URL}/styles/roadmap.css",
+                  },
+              },
+          }
+          Path("manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+          PY
+
+          git add content/roadmap.json styles/roadmap.css manifest.json .nojekyll index.html
+          if git diff --cached --quiet; then
+            echo "No production asset changes to publish"
+          else
+            git commit -m "Deploy production roadmap assets for ${COMMIT_SHA}"
+            git push origin gh-pages
+          fi
+
   build-preview:
     if: github.event_name == 'pull_request'
     name: Validate and build preview
@@ -56,11 +169,13 @@ jobs:
     name: Publish same-repo preview
     needs: build-preview
     runs-on: ubuntu-latest
+    concurrency:
+      group: roadmap-pages-gh-pages
+      cancel-in-progress: false
     permissions:
       actions: read
       contents: write
       issues: write
-      pull-requests: write
     steps:
       - name: Download standalone preview artifact
         uses: actions/download-artifact@v4
@@ -103,12 +218,19 @@ jobs:
           cat > index.html <<'HTML'
           <!doctype html>
           <meta charset="utf-8">
-          <title>Autonomi roadmap previews</title>
-          <h1>Autonomi roadmap previews</h1>
+          <title>Autonomi roadmap assets and previews</title>
+          <h1>Autonomi roadmap assets and previews</h1>
+          <h2>Production assets</h2>
+          <ul>
+            <li><a href="content/roadmap.json">content/roadmap.json</a></li>
+            <li><a href="styles/roadmap.css">styles/roadmap.css</a></li>
+            <li><a href="manifest.json">manifest.json</a></li>
+          </ul>
+          <h2>Pull request previews</h2>
           <p>Open a pull request preview under <code>/pr-N/</code>.</p>
           HTML
 
-          git add .
+          git add "pr-${PR_NUMBER}/index.html" .nojekyll index.html
           if git diff --cached --quiet; then
             echo "No preview changes to publish"
           else
@@ -157,13 +279,16 @@ jobs:
             echo
             echo "### PR comment not posted"
             echo
-            echo "The preview was published, but GitHub rejected the bot comment. The workflow requests least-privilege issues:write and pull-requests:write permissions; if comments are still blocked, check the repository Actions workflow token policy. The preview URL above and the uploaded artifact remain the fallback."
+            echo "The preview was published, but GitHub rejected the bot comment. The workflow requests least-privilege issues:write permission; if comments are still blocked, check the repository Actions workflow token policy. The preview URL above and the uploaded artifact remain the fallback."
           } >> "$GITHUB_STEP_SUMMARY"
 
   cleanup-preview:
     if: github.event_name == 'pull_request_target' && github.event.action == 'closed'
     name: Clean up closed PR preview
     runs-on: ubuntu-latest
+    concurrency:
+      group: roadmap-pages-gh-pages
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
