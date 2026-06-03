@@ -59,29 +59,57 @@ check its work.
 
 ## Wire it into Framer
 
-Use these jsDelivr URLs for the private POC test once the repo has been pushed:
+### Important: private repos do not work with browser fetch
 
-- `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/content/roadmap.json`
-- `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/styles/roadmap.css`
+The Framer component fetches `content/roadmap.json` and `styles/roadmap.css` in the visitor's browser. That means the URLs must be publicly reachable without GitHub authentication.
+
+At the moment this repo is private, so the public CDN/raw URLs will return 404 and Framer will not be able to load the roadmap body from them.
+
+Before using this on a Framer test or live page, choose one delivery path:
+
+1. **Make this repo public** and use jsDelivr URLs. This is the simplest POC path if the roadmap content is safe to publish.
+2. **Keep the repo private** and copy/sync the generated content into a public host, Framer CMS, or another controlled public asset location. This is safer for private drafts but needs more setup.
+3. **Use a server/proxy** that can read the private repo and expose only approved roadmap JSON/CSS publicly. This is usually overkill for the POC.
+
+Do not put GitHub tokens or private credentials into the Framer component. Anything in the component runs client-side and would be visible to visitors.
+
+### Use a Framer code component, not an embed
+
+This is intended to be a **Framer code component**.
+
+Do not paste generated roadmap HTML into a Framer HTML embed. The code-component approach renders inline, supports auto height, responds to real page width, and avoids iframe/breakpoint duplication.
+
+What to paste into Framer:
+
+- Paste the full contents of `framer/RoadmapBody.tsx` into a Framer code component.
+- Then place that component on the roadmap page.
+- The hero/header/intro/site nav/footer remain native Framer content.
+- This repo controls only the roadmap body section.
+
+### URLs to use if/when the repo is public
+
+Once the repo or selected assets are publicly reachable, set these component properties:
+
+- **JSON URL**: `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/content/roadmap.json`
+- **CSS URL**: `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/styles/roadmap.css`
 
 Manual Framer test path:
 
-1. In Framer, paste `framer/RoadmapBody.tsx` as a code component (or update the existing component).
-2. Drop it onto a test page where the roadmap body should appear.
+1. In Framer, create or update a code component using `framer/RoadmapBody.tsx`.
+2. Drop the component onto a test page where the roadmap body should appear.
 3. Set width **Fill** and height **Auto**.
-4. In the component properties, set **JSON URL** and **CSS URL** to the two jsDelivr URLs above.
+4. In the component properties, set **JSON URL** and **CSS URL** to the public URLs above, or to whatever public asset URLs you choose.
 5. Preview or publish the test page.
 6. Confirm the body content renders, resizes across breakpoints, and matches `preview/standalone.html`.
 
 Notes:
 
-1. The easiest/most reliable delivery path is **jsDelivr** (proper MIME + CORS + caching):
+1. The easiest public delivery path is **jsDelivr** (proper MIME + CORS + caching):
    - `https://cdn.jsdelivr.net/gh/<org>/<repo>@main/content/roadmap.json`
    - `https://cdn.jsdelivr.net/gh/<org>/<repo>@main/styles/roadmap.css`
-   - (raw.githubusercontent.com works too, but jsDelivr is steadier.)
-
-Pin to a tag/commit instead of `@main` (e.g. `@v1`) if you want changes to go
-live only when you cut a release.
+   - `raw.githubusercontent.com` can also work for public files, but jsDelivr is steadier for MIME/CORS.
+2. jsDelivr does not serve private GitHub repo contents.
+3. Pin to a tag/commit instead of `@main` (e.g. `@v1`) if you want changes to go live only when you cut a release.
 
 ## Known trade-off (read before going live)
 
