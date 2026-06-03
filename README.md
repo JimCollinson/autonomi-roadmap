@@ -38,6 +38,15 @@ or scripts — safe for colleagues/AI to edit freely.
 
 ## Preview locally (no Framer)
 
+Generate the single-file preview after edits:
+
+```bash
+npm run preview
+# writes preview/standalone.html
+```
+
+Open `preview/standalone.html` directly to check the exact generated body HTML and CSS.
+
 `fetch` is blocked on `file://`, so serve the folder:
 
 ```bash
