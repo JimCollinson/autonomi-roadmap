@@ -36,8 +36,8 @@ merge to `main`; Framer fetches the latest after GitHub Pages publishes. See
 ## Content / responsibility split
 
 - **GitHub repo owns:** the roadmap **body** — the on-page nav pills and the
-  Live / Next / Sandbox sections and footer tagline — plus that section's CSS,
-  fonts and responsive layout.
+  Live / Next / Sandbox sections — plus that section's CSS, fonts and
+  responsive layout.
 - **Framer owns:** the **hero header and intro** (edited natively in Framer), and
   the styling for the hero, the site navigation and the site footer.
 

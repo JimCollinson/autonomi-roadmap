@@ -25,7 +25,6 @@ const baseData = {
       ],
     },
   ],
-  footer: "Footer",
 }
 
 const html = buildHtml(baseData)
