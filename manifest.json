@@ -1,0 +1,14 @@
+{
+  "commit": "4e326240668e8d87531ecd198c1744930e6210b9",
+  "updatedAt": "2026-06-03T16:10:55Z",
+  "assets": {
+    "roadmapJson": {
+      "path": "/autonomi-roadmap/content/roadmap.json",
+      "url": "https://jimcollinson.github.io/autonomi-roadmap/content/roadmap.json"
+    },
+    "roadmapCss": {
+      "path": "/autonomi-roadmap/styles/roadmap.css",
+      "url": "https://jimcollinson.github.io/autonomi-roadmap/styles/roadmap.css"
+    }
+  }
+}
