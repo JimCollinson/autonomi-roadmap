@@ -92,6 +92,12 @@ this page matters, the more robust pattern is a GitHub Action that syncs the
 content into **Framer CMS** on push (content stays indexable); ask and we can
 add that.
 
+## Governance before live use
+
+Keep the GitHub repo private for the POC. Before using `@main` on a live public page, protect `main` with required pull requests and CODEOWNERS review for `content/`, `styles/`, `framer/`, `lib/`, and `docs/adr/`.
+
+Anyone with write access can change public roadmap copy and links once Framer points at `@main`, so direct pushes should be reserved for emergencies.
+
 ## Keeping the renderer in sync
 
 `lib/render.js` and the renderer block inside `framer/RoadmapBody.tsx` are

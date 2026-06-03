@@ -1,0 +1,8 @@
+# Roadmap content shim ownership.
+# Changes to live content, styling, rendering, and ADRs should be reviewed by Jim.
+
+/content/ @JimCollinson
+/styles/ @JimCollinson
+/framer/ @JimCollinson
+/lib/ @JimCollinson
+/docs/adr/ @JimCollinson
