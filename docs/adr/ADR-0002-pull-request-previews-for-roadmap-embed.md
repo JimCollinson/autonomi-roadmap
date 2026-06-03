@@ -19,7 +19,7 @@ The preview should not touch Framer or autonomi.com. Production remains governed
 
 Generate a standalone roadmap preview for each pull request by running the existing security tests, roadmap validation, and `npm run preview` against the pull request candidate. Upload `preview/standalone.html` as a workflow artifact for every pull request so reviewers always have a fallback preview file attached to the check run.
 
-For same-repository pull requests only, publish the generated standalone preview to GitHub Pages under `/pr-<PR number>/` and create or update a single bot comment on the pull request with the preview URL. The published file is the standalone roadmap body preview generated from that PR branch's JSON and CSS.
+For same-repository pull requests only, publish the generated standalone preview to GitHub Pages under `/pr-<PR number>/` and create or update a single bot comment on the pull request with the preview URL when repository token settings allow it. The publish job must also expose the preview URL in the job summary so comment permission failures do not block an otherwise valid preview. The published file is the standalone roadmap body preview generated from that PR branch's JSON and CSS.
 
 Fork pull requests do not get privileged deploy or comment steps. They still run the normal build, validation, security checks, and artifact upload using the `pull_request` event, but they do not receive write-token deployment or comment permissions.
 
@@ -27,16 +27,16 @@ When a pull request closes, remove `/pr-<PR number>/` from the Pages branch usin
 
 Production Framer stays pointed at the `@main` jsDelivr assets. Merging to `main` remains the only path that can affect the live roadmap body. PR previews are public review surfaces, not a staging Framer page and not a replacement for branch protection or CODEOWNERS review.
 
-Security policy: do not run untrusted fork pull request code with write permissions. Build and validation run on `pull_request` with read-only contents access. Only same-repository pull requests get Pages deployment and PR-comment writes. Any `pull_request_target` use is limited to trusted cleanup work and must not check out or execute pull request code.
+Security policy: do not run untrusted fork pull request code with write permissions. Build and validation run on `pull_request` with read-only contents access. Only same-repository pull requests get Pages deployment and PR-comment writes, requested with least-privilege `contents: write`, `issues: write`, and `pull-requests: write` job permissions. If repository policy still blocks PR comments, the comment step is non-blocking and reviewers use the job-summary URL or artifact fallback. Any `pull_request_target` use is limited to trusted cleanup work and must not check out or execute pull request code.
 
 ## Consequences
 
 - Reviewers can inspect the rendered roadmap body before merge, including candidate JSON content and CSS from the pull request branch.
 - Agentic edits become easier to assess because reviewers can judge the output rather than relying on raw diffs alone.
-- Same-repo pull requests get a convenient URL in a stable PR comment; fork pull requests keep a safer artifact/checks-only workflow.
+- Same-repo pull requests get a convenient URL in the publish job summary and, when permitted, in a stable PR comment; fork pull requests keep a safer artifact/checks-only workflow.
 - Preview artifacts provide a fallback if GitHub Pages is not enabled, is still propagating, or fails to serve the preview URL.
 - Because this repository is public, deployed PR previews are public too. Draft roadmap copy, links, and styling in same-repo PRs must be treated as publicly visible once the preview workflow publishes them.
-- GitHub Pages setup, the `gh-pages` branch, preview comment updates, and closed-PR cleanup are additional moving parts that can fail independently of validation.
+- GitHub Pages setup, the `gh-pages` branch, preview comment updates, and closed-PR cleanup are additional moving parts that can fail independently of validation; comment updates are non-blocking because the summary URL and artifact remain available.
 - The preview shows the standalone roadmap embed/body, not the full Framer page with its native hero, navigation, footer, and surrounding site context.
 - The live Framer page is unchanged until a pull request merges to `main` and jsDelivr serves the updated `@main` assets.
 - jsDelivr cache propagation for production remains a separate operational concern; PR previews do not prove that the production CDN cache has refreshed.

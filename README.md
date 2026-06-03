@@ -70,9 +70,11 @@ GitHub Pages at:
 https://jimcollinson.github.io/autonomi-roadmap/pr-<PR number>/
 ```
 
-The workflow creates or updates one bot comment on the PR with that URL. Use it to
-review the rendered and styled roadmap body before deciding whether to request
-changes, publish, or merge.
+The workflow creates or updates one bot comment on the PR with that URL when the
+repository's Actions token policy allows PR comments. It also writes the URL to
+the publish job summary, so a comment permission failure does not block an
+otherwise valid preview. Use the URL to review the rendered and styled roadmap
+body before deciding whether to request changes, publish, or merge.
 
 Fork PRs do not get a deployed preview or bot comment because those steps require
 write permissions. For forks, or if the Pages URL is unavailable, use the uploaded
@@ -90,8 +92,10 @@ jsDelivr URLs below, so production changes only after merge to `main` and normal
 CDN propagation.
 
 If the preview URL 404s after the workflow passes, GitHub Pages may not be enabled
-for the repository/`gh-pages` branch yet, or Pages may still be propagating. The
-artifact remains the fallback preview in either case.
+for the repository/`gh-pages` branch yet, or Pages may still be propagating. If
+the PR comment is absent, check the publish job summary for the same URL and
+confirm repository Actions workflow token settings permit `issues: write` and
+`pull-requests: write`. The artifact remains the fallback preview in either case.
 
 ## Wire it into Framer
 
