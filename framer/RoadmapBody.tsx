@@ -22,8 +22,8 @@ interface Props {
  * @framerSupportedLayoutHeight auto
  */
 export default function RoadmapBody({
-    jsonUrl = "https://cdn.jsdelivr.net/gh/ORG/REPO@main/content/roadmap.json",
-    cssUrl = "https://cdn.jsdelivr.net/gh/ORG/REPO@main/styles/roadmap.css",
+    jsonUrl = "https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/content/roadmap.json",
+    cssUrl = "https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/styles/roadmap.css",
     maxWidth = 1200,
 }: Props) {
     const [html, setHtml] = useState("")
@@ -64,8 +64,8 @@ export default function RoadmapBody({
 }
 
 addPropertyControls(RoadmapBody, {
-    jsonUrl: { type: ControlType.String, title: "JSON URL", defaultValue: "https://cdn.jsdelivr.net/gh/ORG/REPO@main/content/roadmap.json" },
-    cssUrl: { type: ControlType.String, title: "CSS URL", defaultValue: "https://cdn.jsdelivr.net/gh/ORG/REPO@main/styles/roadmap.css" },
+    jsonUrl: { type: ControlType.String, title: "JSON URL", defaultValue: "https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/content/roadmap.json" },
+    cssUrl: { type: ControlType.String, title: "CSS URL", defaultValue: "https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/styles/roadmap.css" },
     maxWidth: { type: ControlType.Number, title: "Max width", defaultValue: 1200, min: 600, max: 1600, step: 10, unit: "px" },
 })
 

@@ -59,14 +59,26 @@ check its work.
 
 ## Wire it into Framer
 
-1. Push this repo to GitHub.
-2. Get the raw URLs for the two files. Easiest/most reliable is **jsDelivr** (proper MIME + CORS + caching):
+Use these jsDelivr URLs for the private POC test once the repo has been pushed:
+
+- `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/content/roadmap.json`
+- `https://cdn.jsdelivr.net/gh/jimcollinson/autonomi-roadmap@main/styles/roadmap.css`
+
+Manual Framer test path:
+
+1. In Framer, paste `framer/RoadmapBody.tsx` as a code component (or update the existing component).
+2. Drop it onto a test page where the roadmap body should appear.
+3. Set width **Fill** and height **Auto**.
+4. In the component properties, set **JSON URL** and **CSS URL** to the two jsDelivr URLs above.
+5. Preview or publish the test page.
+6. Confirm the body content renders, resizes across breakpoints, and matches `preview/standalone.html`.
+
+Notes:
+
+1. The easiest/most reliable delivery path is **jsDelivr** (proper MIME + CORS + caching):
    - `https://cdn.jsdelivr.net/gh/<org>/<repo>@main/content/roadmap.json`
    - `https://cdn.jsdelivr.net/gh/<org>/<repo>@main/styles/roadmap.css`
    - (raw.githubusercontent.com works too, but jsDelivr is steadier.)
-3. In Framer, paste `framer/RoadmapBody.tsx` as a code component (or update the existing one).
-4. Drop it on the page where the embed was, set width **Fill**, height **Auto**.
-5. In the component's properties, set **JSON URL** and **CSS URL** to your two URLs. Optionally set **Max width** to match the nav.
 
 Pin to a tag/commit instead of `@main` (e.g. `@v1`) if you want changes to go
 live only when you cut a release.
