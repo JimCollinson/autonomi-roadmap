@@ -1,0 +1,10 @@
+{
+  "name": "autonomi-roadmap-content",
+  "private": true,
+  "type": "module",
+  "description": "GitHub-driven content + styles for the Autonomi roadmap, rendered by a fixed Framer component.",
+  "scripts": {
+    "preview": "node build-preview.mjs",
+    "serve": "npx --yes serve ."
+  }
+}

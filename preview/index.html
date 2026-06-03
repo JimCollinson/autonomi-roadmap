@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Autonomi Roadmap — local preview</title>
+  <link rel="stylesheet" href="../styles/roadmap.css" />
+  <style>
+    body { margin: 0; padding: 40px 0; background: #fff; }
+    .preview-note { max-width: 1200px; margin: 0 auto 24px; padding: 0 24px; font: 13px/1.5 'Inter', sans-serif; color: #8994A3; }
+  </style>
+</head>
+<body>
+  <div class="preview-note">Local preview — renders <code>content/roadmap.json</code> with <code>styles/roadmap.css</code> via <code>lib/render.js</code>, exactly as Framer will.</div>
+  <div id="root"></div>
+  <script type="module">
+    import { buildHtml } from "../lib/render.js"
+    const root = document.getElementById("root")
+    try {
+      const data = await fetch("../content/roadmap.json", { cache: "no-store" }).then((r) => r.json())
+      root.innerHTML = buildHtml(data)
+    } catch (e) {
+      root.innerHTML = '<p style="max-width:1200px;margin:0 auto;padding:0 24px;color:#900;font-family:sans-serif">Could not load content. Run this through a local server (fetch is blocked on file://). Try: <code>npx serve</code> in the repo root, then open <code>/preview/</code>.</p>'
+      console.error(e)
+    }
+  </script>
+</body>
+</html>

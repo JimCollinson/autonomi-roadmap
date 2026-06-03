@@ -1,0 +1,143 @@
+{
+  "pills": [
+    { "label": "Live", "href": "#live", "style": "is-live" },
+    { "label": "Next", "href": "#next", "style": "is-next" },
+    { "label": "Sandbox", "href": "#sandbox", "style": "is-sandbox" }
+  ],
+  "sections": [
+    {
+      "id": "live",
+      "label": "Live",
+      "title": "Running today",
+      "icon": "live",
+      "tiers": [
+        {
+          "label": "Platforms",
+          "layout": "platforms",
+          "cards": [
+            {
+              "tag": "protocol",
+              "title": "Archive",
+              "sub": "The permanent data network",
+              "body": "The peer-to-peer storage network is live. Nodes run on home computers, connect directly through NAT without configuration. Every handshake uses post-quantum cryptography - ML-DSA-65 and ML-KEM-768, both NIST-standardised. No classical fallbacks. Data is self-encrypted using ChaCha20-Poly1305 + BLAKE3. Pay once per upload. No subscriptions, no egress fees."
+            },
+            {
+              "tag": "protocol",
+              "title": "x0x",
+              "sub": "Agent-to-agent collaboration network",
+              "body": "Post-quantum encrypted gossip networking. Agents discover each other, share skills, synchronise state, and collaborate without central servers. Secured private groups using TreeKEM - invite, join, ban, forward-secrecy membership. Running on a production fleet across NYC, SFO, Helsinki, Nuremberg, Singapore, and Sydney."
+            }
+          ]
+        },
+        {
+          "label": "Products",
+          "layout": "products",
+          "cards": [
+            {
+              "tag": "app",
+              "title": "Indelible",
+              "sub": "Permanent storage for organisations",
+              "body": "Free, open-source gateway. REST API, Docker deployment, collections, tagging, bulk ops. Enterprise SSO (Okta, Entra, Google), SCIM 2.0, multi-wallet. [indelibletool.com](https://indelibletool.com)"
+            },
+            {
+              "tag": "app",
+              "title": "Desktop App",
+              "sub": "Upload, download, run nodes",
+              "body": "Mac, Windows, Linux. 18 languages. Upload files, run a node and earn ANT. Dark mode, auto-updates, built-in wallet."
+            },
+            {
+              "tag": "app",
+              "title": "The Reading Room",
+              "sub": "Where knowledge lives permanently",
+              "body": "Curated, open-access library stored on Archive. Four books, 442 sources, 78,000 words, audio narration. [reading-room.com](https://reading-room.com)"
+            },
+            {
+              "tag": "tools",
+              "title": "SDKs and CLI",
+              "sub": "Build on Autonomi from any language",
+              "body": "15+ language SDKs: Python, Go, Rust, JavaScript, Java, Kotlin, C#, Swift, and more. gRPC and REST interfaces."
+            },
+            {
+              "tag": "infra",
+              "title": "ANT Token",
+              "sub": "The network's native currency",
+              "body": "Live on Arbitrum. Merkle Tree batch payments and single-node payments. Total supply: 1.2 billion. Available on MEXC, Uniswap V3, BitMart, Ourbit."
+            }
+          ]
+        },
+        {
+          "label": "Network capabilities",
+          "layout": "infra",
+          "cards": [
+            { "title": "Post-Quantum Security", "sub": "No classical fallbacks", "body": "ML-DSA-65 signatures, ML-KEM-768 key exchange. NIST-standardised. First of its kind at this scale." },
+            { "title": "QUIC NAT Traversal", "sub": "Every home computer is infrastructure", "body": "Nodes connect peer-to-peer through residential NAT without configuration." },
+            { "title": "Self-Encryption", "sub": "Impossible to read without your keys", "body": "ChaCha20-Poly1305 + BLAKE3. Content-addressed, convergent, geographically distributed." },
+            { "title": "Node Reputation", "sub": "The network protects itself", "body": "EigenTrust scoring, sybil resistance, eclipse protection, geographic diversity." },
+            { "title": "Auto Upgrades", "sub": "The network evolves together", "body": "Nodes upgrade automatically with integrity verification. No manual intervention." },
+            { "title": "Data Payments", "sub": "Pay once, store permanently", "body": "Merkle Tree batch payments for reduced gas. Single-node payments for simplicity. All via ANT." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "next",
+      "label": "Next",
+      "title": "Actively shipping",
+      "icon": "next",
+      "tiers": [
+        {
+          "layout": "herocards",
+          "cards": [
+            {
+              "tag": "app",
+              "title": "Fae",
+              "sub": "Your local AI that becomes part of something bigger",
+              "body": "Privacy-first AI agent on your machine. No cloud, no internet required. Being redesigned as headless and cross-platform - Swift for Apple, Dioxus for Windows/Linux/iOS/Android. Via x0x, your Fae connects to your friends' Fae agents to form \"The Fae\" - trusted communities that share capabilities, collaborate on tasks, and help each other."
+            },
+            {
+              "tag": "protocol",
+              "title": "Trust Layer",
+              "sub": "Agent reputation marketplace",
+              "body": "On-chain marketplace where agents stake real tokens behind their claims. Disputes resolved using immutable evidence stored on Archive and adjudicated by independent AI resolvers. Bounty hunters challenge agents with inflated reputations. Your reputation is financial - you can't fake it without risking real money. Proof of concept live on Base testnet."
+            }
+          ]
+        },
+        {
+          "layout": "products",
+          "cards": [
+            { "tag": "protocol", "title": "Storage Auditing", "sub": "Proving nodes store what they claim", "body": "Lightweight challenge on existing gossip. Merkle root hash + random nonce. Tested on 400 nodes, 5 regions, zero false positives." },
+            { "tag": "infra", "title": "Faster Uploads + Downloads", "sub": "Smarter throughput management", "body": "Byte-aware throughput optimiser. ~2x faster downloads. First 2.7GB production upload in 30 minutes." },
+            { "tag": "app", "title": "Agent Skill Sharing", "sub": "Skills that spread themselves", "body": "Share agent skills across devices and users. Private groups, public feeds, collaborative improvement." },
+            { "tag": "app", "title": "Communitas", "sub": "Collaboration without corporate servers", "body": "Full collaboration suite on x0x. Board, Chat, Docs, Canvas, Drive, Calls - all peer-to-peer with post-quantum encryption." },
+            { "tag": "infra", "title": "Clock Tolerance", "sub": "Works regardless of system time", "body": "Storage-state verification replacing timestamp-based validation. Critical for Windows and dual-boot users." },
+            { "tag": "infra", "title": "Bootstrap Cache", "sub": "Faster, more reliable connections", "body": "Smarter startup, IP diversity, sector-balanced peer selection. Reduced time-to-first-operation." },
+            { "tag": "tools", "title": "Mobile SDKs", "sub": "Autonomi on iOS and Android", "body": "Native Swift and Kotlin bindings. xcframework and AAR packaging. iOS test app built." },
+            { "tag": "protocol", "title": "Four-Word Addresses", "sub": "Memorable network locations", "body": "Human-readable, verbally shareable four-word addresses replacing cryptographic hashes and IPs." },
+            { "tag": "app", "title": "Indelible Hardening", "sub": "Enterprise-ready permanent storage", "body": "Content dedup, improved search, lazy-loading collections, activity metrics, CSRF protection." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sandbox",
+      "label": "Sandbox",
+      "title": "Being shaped",
+      "icon": "sandbox",
+      "tiers": [
+        {
+          "layout": "sandbox",
+          "cards": [
+            { "title": "Voice and Video", "sub": "Peer-to-peer communications", "body": "WebRTC over QUIC. No STUN/TURN servers. Uses the network's own NAT traversal. 224 tests passing." },
+            { "title": "Compute Mesh", "sub": "Distributed processing", "body": "Pool computing resources across trusted friends' machines. ML inference, shared GPU access, slot-based reservations." },
+            { "title": "Symphony", "sub": "Agent orchestration at scale", "body": "Specialised agents forming teams, dispatching tasks, collaborating on complex work. CRDT-backed, partition-tolerant." },
+            { "title": "Payment Gateway", "sub": "More ways to pay for storage", "body": "Credit or debit card, stablecoins, or ANT directly. No crypto knowledge required for those who don't want it." },
+            { "title": "Agentic Payments", "sub": "Zero-friction agent transactions", "body": "Machine-to-machine payment protocols. Agents pay each other using ANT - directly, programmatically, at scale." },
+            { "title": "AI-Native Networking", "sub": "The network gets smarter", "body": "Intelligent routing, predictive optimisation, adaptive resource allocation." },
+            { "title": "Quantum Threshold Crypto", "sub": "Distributed key management", "body": "Multi-party computation using post-quantum primitives. Shared custody, threshold signing." }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": "The decentralized ecosystem for the agentic era. Post-quantum secure, permanent, and built to run when the internet doesn't."
+}
