@@ -28,6 +28,12 @@ Pull request previews for same-repository PRs should be published under:
 https://withautonomi.github.io/autonomi-roadmap/pr-<PR number>/
 ```
 
+This is a public repository. Content committed to branches and pull requests is
+publicly viewable, and same-repo PR previews are public when served through
+GitHub Pages. Do not add private, embargoed, or unapproved roadmap items to PRs
+unless they are safe to expose publicly. Generated preview pages use `noindex`,
+but that prevents search indexing rather than restricting access.
+
 ## How it works
 
 - The repo holds the roadmap **body content** (`content/roadmap.json`, with inline
