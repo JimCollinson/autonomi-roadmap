@@ -1,8 +1,10 @@
-# Autonomi Roadmap — GitHub-driven content (POC)
+# Autonomi Roadmap — GitHub-driven production content
 
-Proof of concept for managing the roadmap **content** and **styles** in GitHub
-(AI- and PR-friendly) and rendering them in Framer through one small fixed
-component. No more copy-pasting HTML into Framer.
+This repository contains the production roadmap body content and supporting
+styles consumed by the Autonomi.com Framer site. It enables roadmap updates
+through GitHub pull requests, CI validation, hosted previews, and agentic
+workflows, while Framer continues to own the surrounding page structure and
+global site components.
 
 ## How it fits together
 
@@ -68,7 +70,7 @@ For same-repo PRs, the workflow also publishes the generated standalone preview 
 GitHub Pages at:
 
 ```text
-https://jimcollinson.github.io/autonomi-roadmap/pr-<PR number>/
+https://withautonomi.github.io/autonomi-roadmap/pr-<PR number>/
 ```
 
 The workflow creates or updates one bot comment on the PR with that URL when the
@@ -103,9 +105,9 @@ repository Actions workflow token settings permit `issues: write` and
 Merges to `main` run the same security, validation, and preview checks, then
 publish the approved production assets to GitHub Pages:
 
-- **JSON URL**: `https://jimcollinson.github.io/autonomi-roadmap/content/roadmap.json`
-- **CSS URL**: `https://jimcollinson.github.io/autonomi-roadmap/styles/roadmap.css`
-- **Manifest URL**: `https://jimcollinson.github.io/autonomi-roadmap/manifest.json`
+- **JSON URL**: `https://withautonomi.github.io/autonomi-roadmap/content/roadmap.json`
+- **CSS URL**: `https://withautonomi.github.io/autonomi-roadmap/styles/roadmap.css`
+- **Manifest URL**: `https://withautonomi.github.io/autonomi-roadmap/manifest.json`
 
 The manifest records the deployed commit SHA, UTC update timestamp, and asset
 paths/URLs. If a merged change is not visible on the Framer page, wait a short
@@ -119,17 +121,11 @@ GitHub Pages as the production asset host unless a future ADR replaces it.
 
 ## Wire it into Framer
 
-### Important: private repos do not work with browser fetch
+### Browser fetch requires public asset URLs
 
 The Framer component fetches `content/roadmap.json` and `styles/roadmap.css` in the visitor's browser. That means the URLs must be publicly reachable without GitHub authentication.
 
-At the moment this repo is private, so browser-facing public asset URLs will return 404 unless GitHub Pages is publicly serving the published assets. Framer will not be able to load the roadmap body from private GitHub URLs.
-
-Before using this on a Framer test or live page, choose one delivery path:
-
-1. **Enable public GitHub Pages access** and use the GitHub Pages URLs below. This is the intended production path if the roadmap content is safe to publish.
-2. **Keep the repo private** and copy/sync the generated content into a public host, Framer CMS, or another controlled public asset location. This is safer for private drafts but needs more setup.
-3. **Use a server/proxy** that can read the private repo and expose only approved roadmap JSON/CSS publicly. This is usually overkill for the POC.
+For production, use the public GitHub Pages URLs above. Do not point Framer at private GitHub file URLs; they will return 404 to visitors unless a public delivery path such as GitHub Pages is serving the published assets.
 
 Do not put GitHub tokens or private credentials into the Framer component. Anything in the component runs client-side and would be visible to visitors.
 
@@ -150,8 +146,8 @@ What to paste into Framer:
 
 Once GitHub Pages production assets are publicly reachable, set these component properties:
 
-- **JSON URL**: `https://jimcollinson.github.io/autonomi-roadmap/content/roadmap.json`
-- **CSS URL**: `https://jimcollinson.github.io/autonomi-roadmap/styles/roadmap.css`
+- **JSON URL**: `https://withautonomi.github.io/autonomi-roadmap/content/roadmap.json`
+- **CSS URL**: `https://withautonomi.github.io/autonomi-roadmap/styles/roadmap.css`
 
 Manual Framer test path:
 
@@ -172,18 +168,21 @@ Notes:
 3. Pin to release-managed URLs in a future workflow if you want changes to go live
    only when you cut a release.
 
-## Known trade-off (read before going live)
+## Known trade-offs (read before going live)
 
-Because the content is fetched in the browser at load time, it is **not** in
-Framer's pre-rendered/static HTML — so it won't be in the initial paint or
-indexed by search engines. Fine for an internal or JS-tolerant page. If SEO on
-this page matters, the more robust pattern is a GitHub Action that syncs the
-content into **Framer CMS** on push (content stays indexable); ask and we can
-add that.
+This remains a pragmatic bridge, not a full site rebuild: it lets the roadmap
+body on the production website be updated through GitHub, supports rapid updates
+and agentic workflows, and preserves Framer's global components. The main
+trade-offs are that some styling still has to be coordinated between this repo
+and Framer, and because the content is fetched in the browser at load time, it is
+**not** in Framer's pre-rendered/static HTML — so it won't be in the initial
+paint or indexed by search engines. If SEO on this page matters, the more robust
+pattern is a GitHub Action that syncs the content into **Framer CMS** on push
+(content stays indexable); ask and we can add that.
 
 ## Governance before live use
 
-Keep the GitHub repo private for the POC unless/until the production assets are intended to be public. Before using GitHub Pages URLs on a live public page, protect `main` with required pull requests and CODEOWNERS review for `content/`, `styles/`, `framer/`, `lib/`, and `docs/adr/`.
+Before using GitHub Pages URLs on a live public page, protect `main` with required pull requests and CODEOWNERS review for `content/`, `styles/`, `framer/`, `lib/`, and `docs/adr/`.
 
 Anyone with write access can change public roadmap copy and links once Framer points at the GitHub Pages assets, so direct pushes should be reserved for emergencies.
 
