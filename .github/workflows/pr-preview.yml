@@ -92,8 +92,6 @@ jobs:
             <li><a href="styles/roadmap.css">styles/roadmap.css</a></li>
             <li><a href="manifest.json">manifest.json</a></li>
           </ul>
-          <h2>Pull request previews</h2>
-          <p>Open a pull request preview under <code>/pr-N/</code>.</p>
           HTML
 
           UPDATED_AT="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
@@ -227,8 +225,6 @@ jobs:
             <li><a href="styles/roadmap.css">styles/roadmap.css</a></li>
             <li><a href="manifest.json">manifest.json</a></li>
           </ul>
-          <h2>Pull request previews</h2>
-          <p>Open a pull request preview under <code>/pr-N/</code>.</p>
           HTML
 
           git add "pr-${PR_NUMBER}/index.html" .nojekyll index.html

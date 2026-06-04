@@ -15,6 +15,7 @@ const out = `<!doctype html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet" />
   <title>Autonomi Roadmap — standalone preview</title>
   <style>${css}</style>
   <style>body{margin:0;padding:40px 0;background:#fff}</style>

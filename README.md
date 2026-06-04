@@ -84,9 +84,15 @@ write permissions. For forks, or if the Pages URL is unavailable, use the upload
 `roadmap-preview-pr-<PR number>` artifact from the workflow run and open the
 included `standalone.html` locally.
 
-PR previews are public when served through GitHub Pages because this repository is
-public. Do not put private draft material into same-repo PRs unless it is safe to
-expose in a public preview URL.
+This is a public repository. Content committed to branches and pull requests is
+publicly viewable, and same-repo PR previews are public when served through
+GitHub Pages. Do not add private, embargoed, or unapproved roadmap items to PRs
+unless they are safe to expose publicly.
+
+Generated preview pages include a `noindex,nofollow,noarchive,nosnippet` robots
+meta tag so search engines should not include them in search results, but that is
+not access control. Anyone with the preview URL can view the page while it
+exists.
 
 The preview is only the standalone roadmap body generated from the PR branch's
 `content/roadmap.json` and `styles/roadmap.css`. It does not update Framer or the
