@@ -100,28 +100,6 @@ comment is absent, check the publish job summary for the same URL and confirm
 repository Actions workflow token settings permit `issues: write` and
 `pull-requests: write`. The artifact remains the fallback preview in either case.
 
-## Transfer and cutover notes
-
-This branch is intended to be merged **after** GitHub transfers the repository
-from `JimCollinson/autonomi-roadmap` to `withautonomi/autonomi-roadmap`, not
-before. Keep the live Framer component pointed at the old `jimcollinson.github.io`
-asset URLs until the new `withautonomi.github.io` Pages URLs are available and
-verified.
-
-GitHub Pages URLs do **not** redirect automatically after a repository transfer.
-For cutover:
-
-1. Transfer the repository to `withautonomi/autonomi-roadmap`.
-2. Verify GitHub Actions and GitHub Pages are enabled and correctly configured in
-   the `withautonomi` repository.
-3. Verify the new production manifest and assets load at
-   `https://withautonomi.github.io/autonomi-roadmap/manifest.json`,
-   `/content/roadmap.json`, and `/styles/roadmap.css`.
-4. Merge this cleanup PR only once the withautonomi Pages URLs are available or
-   expected as the production URLs.
-5. Update the Framer code component/properties to use the verified
-   `withautonomi.github.io` JSON and CSS URLs, then preview/publish Framer.
-
 ## Production asset publishing
 
 Merges to `main` run the same security, validation, and preview checks, then
@@ -147,7 +125,7 @@ GitHub Pages as the production asset host unless a future ADR replaces it.
 
 The Framer component fetches `content/roadmap.json` and `styles/roadmap.css` in the visitor's browser. That means the URLs must be publicly reachable without GitHub authentication.
 
-For production, use the public GitHub Pages URLs after the repository transfer and Pages verification described above. Do not point Framer at private GitHub file URLs; they will return 404 to visitors unless a public delivery path such as GitHub Pages is serving the published assets.
+For production, use the public GitHub Pages URLs above. Do not point Framer at private GitHub file URLs; they will return 404 to visitors unless a public delivery path such as GitHub Pages is serving the published assets.
 
 Do not put GitHub tokens or private credentials into the Framer component. Anything in the component runs client-side and would be visible to visitors.
 

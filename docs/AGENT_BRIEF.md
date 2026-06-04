@@ -14,10 +14,9 @@ supports rapid updates and agentic workflows, and preserves Framer global
 components. The trade-offs include style coordination with Framer and the usual
 runtime-fetch limitations noted below.
 
-## Production URLs after repository transfer
+## Production URLs
 
-After the repository is transferred to `withautonomi/autonomi-roadmap`, production
-assets should be served from GitHub Pages at:
+Production assets are served from GitHub Pages at:
 
 - JSON: `https://withautonomi.github.io/autonomi-roadmap/content/roadmap.json`
 - CSS: `https://withautonomi.github.io/autonomi-roadmap/styles/roadmap.css`
@@ -28,18 +27,6 @@ Pull request previews for same-repository PRs should be published under:
 ```text
 https://withautonomi.github.io/autonomi-roadmap/pr-<PR number>/
 ```
-
-## Transfer and cutover rules
-
-- Merge the withautonomi transfer cleanup PR only **after** the repository has
-  been transferred to `withautonomi/autonomi-roadmap`.
-- Do not switch Framer from the old `jimcollinson.github.io` URLs until the new
-  `withautonomi.github.io` Pages URLs are available and verified.
-- GitHub Pages URLs do not redirect automatically after a repository transfer.
-- After transfer, verify Actions and Pages settings in the `withautonomi` repo,
-  then verify the manifest, JSON, and CSS URLs load from `withautonomi.github.io`.
-- Only after those checks should Framer component properties/code be updated to
-  the withautonomi JSON and CSS URLs.
 
 ## How it works
 
