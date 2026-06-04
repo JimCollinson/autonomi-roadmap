@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/jimcollinson/autonomi-roadmap/schemas/roadmap.schema.json",
+  "$id": "https://github.com/withautonomi/autonomi-roadmap/schemas/roadmap.schema.json",
   "title": "Autonomi roadmap content",
   "type": "object",
   "additionalProperties": false,
